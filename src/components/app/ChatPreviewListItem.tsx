@@ -5,6 +5,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Users } from "lucide-react";
 
 const MAX_DEFAULT_TITLE_LENGTH = 25;
+const MILLIS_IN_A_DAY = 1000 * 60 * 60 * 24;
+const MILLIS_IN_A_WEEK = MILLIS_IN_A_DAY * 7;
 
 const getChatPreviewListItemDefaultTitle = (chat: ChatData): string => {
   const abbreviatedDefaultTitle = `${chat.members[0]?.firstname} + ${
@@ -48,8 +50,37 @@ const getChatPreviewListItemAvatar = (chat: ChatData): ReactNode => {
         </Avatar>
       );
     default:
-      return exhaustiveGuard(chat.type)
+      return exhaustiveGuard(chat.type);
   }
+};
+
+const getChatPreviewListItemCornerText = (chat: ChatData): string => {
+  const lastMessageDate = new Date(chat.lastMessage.dateCreated);
+  const now = new Date();
+
+  const isLastMessageWithin24Hours =
+    now.valueOf() - lastMessageDate.valueOf() < MILLIS_IN_A_DAY;
+  const isLastMessageWithin7Days =
+    now.valueOf() - lastMessageDate.valueOf() < MILLIS_IN_A_WEEK;
+
+  if (isLastMessageWithin24Hours) {
+    return lastMessageDate.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "numeric",
+    });
+  }
+
+  if (isLastMessageWithin7Days) {
+    return lastMessageDate.toLocaleDateString([], {
+      weekday: "short",
+    });
+  }
+
+  return lastMessageDate.toLocaleDateString([], {
+    month: "short",
+    day: "2-digit",
+    year: "numeric"
+  });
 };
 
 const getChatPreviewListItemProps = (
@@ -60,7 +91,7 @@ const getChatPreviewListItemProps = (
   return {
     title: chat.title ?? getChatPreviewListItemDefaultTitle(chat),
     subtitle: getChatPreviewListItemSubtitle(chat),
-    timeText: "12:05 PM",
+    cornerText: getChatPreviewListItemCornerText(chat),
     avatar: getChatPreviewListItemAvatar(chat),
     onClick,
     isSelected,
@@ -72,7 +103,7 @@ type ChatPreviewListItemProps = {
   avatar: ReactNode;
   title: string;
   subtitle: string;
-  timeText: string;
+  cornerText: string;
   onClick: () => void;
   isSelected: boolean;
   isPriority: boolean;
@@ -100,7 +131,7 @@ const ChatPreviewListItem = (props: ChatPreviewListItemProps) => {
         <div className="grow">
           <div className="flex">
             <div className="grow text-sm line-clamp-1">{props.title}</div>
-            <div className="text-xs text-gray-500">{props.timeText}</div>
+            <div className="text-xs text-gray-500">{props.cornerText}</div>
           </div>
           <div className="text-xs text-gray-500 line-clamp-1 break-all">
             {props.subtitle}
