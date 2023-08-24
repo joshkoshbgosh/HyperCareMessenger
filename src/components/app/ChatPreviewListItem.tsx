@@ -95,7 +95,7 @@ const getChatPreviewListItemProps = (
     avatar: getChatPreviewListItemAvatar(chat),
     onClick,
     isSelected,
-    isPriority: false,
+    isPriority: chat.lastMessage.priority,
   };
 };
 
