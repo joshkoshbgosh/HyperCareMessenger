@@ -1,15 +1,40 @@
 import { useQuery } from "@tanstack/react-query";
-import { ChatService } from "./services/chatService";
+import { ChatData, ChatService } from "./services/chatService";
 import {
   ChatPreviewListItem,
   getChatPreviewListItemProps,
 } from "./components/app/ChatPreviewListItem";
+import { useState } from "react";
+import { exhaustiveGuard } from "./lib/utils";
+
+const getSelectedChatTitle = (selectedChat: ChatData | null): string => {
+  if (!selectedChat) {
+    return "Select a chat";
+  }
+
+  if (selectedChat.title) {
+    return selectedChat.title;
+  }
+
+  switch (selectedChat.type) {
+    case "self":
+      return "Me";
+    case "single":
+      return selectedChat.members[0]!.firstname;
+    case "group":
+      return selectedChat.members.map(m => m.firstname).join(", ");
+    default:
+      return exhaustiveGuard(selectedChat.type);
+  }
+};
 
 const App = () => {
-  const { isLoading, isError, data, error } = useQuery({
+  const { isLoading, isError, data: allChats, error } = useQuery({
     queryKey: ["chats"],
     queryFn: () => ChatService.getChats(),
   });
+
+  const [selectedChat, setSelectedChat] = useState<ChatData | null>(null);
 
   // TODO: Handle loading and error states
   if (isLoading) {
@@ -25,11 +50,11 @@ const App = () => {
           <h1>Messaging</h1>
         </div>
         <div className="grow overflow-auto">
-          {data?.map((chat) => {
+          {allChats?.map((chat) => {
             const otherProps = getChatPreviewListItemProps(
               chat,
-              () => {},
-              false
+              () => setSelectedChat(chat),
+              selectedChat?.chatId === chat.chatId
             );
             return <ChatPreviewListItem key={chat.chatId} {...otherProps} />;
           })}
@@ -37,7 +62,7 @@ const App = () => {
       </nav>
       <main className="h-full grow">
         <div className="h-12 flex items-center justify-center border-b-2">
-          <h1>Testing</h1>
+          <h1>{getSelectedChatTitle(selectedChat)}</h1>
         </div>
       </main>
     </div>
