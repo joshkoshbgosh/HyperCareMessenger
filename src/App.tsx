@@ -61,7 +61,7 @@ const App = () => {
         </div>
       </nav>
       <main className="h-full grow">
-        <div className="h-12 flex items-center justify-center border-b-2">
+        <div className="h-12 flex items-center justify-center border-b-2 relative">
           <h1>{getSelectedChatTitle(selectedChat)}</h1>
         </div>
       </main>
