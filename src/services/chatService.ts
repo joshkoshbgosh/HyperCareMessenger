@@ -91,6 +91,16 @@ class ChatService {
         }
         return chatListParseResult.data;
     }
+
+    // TODO: implement this for real
+    static async archiveChat(chatId: string): Promise<string> {
+        return await new Promise((resolve) => setTimeout(() => resolve(chatId), 1000));
+     }
+
+    // TODO: implement this for real
+    static async unarchiveChat(chatId: string): Promise<string> {
+       return await new Promise((resolve) => setTimeout(() => resolve(chatId), 1000));
+    }
 }
 
 export {ChatService};

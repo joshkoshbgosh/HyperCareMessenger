@@ -107,6 +107,7 @@ type ChatPreviewListItemProps = {
   onClick: () => void;
   isSelected: boolean;
   isPriority: boolean;
+  className?: string;
 };
 
 const ChatPreviewListItem = (props: ChatPreviewListItemProps) => {
@@ -123,7 +124,8 @@ const ChatPreviewListItem = (props: ChatPreviewListItemProps) => {
           : {
               "hover:bg-gray-300": true,
               "bg-gray-200": props.isSelected,
-            }
+            },
+        props.className && props.className
       )}
     >
       {props.avatar}
