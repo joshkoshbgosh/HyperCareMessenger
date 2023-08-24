@@ -29,7 +29,7 @@ const ChatMemberBasicSchema = ChatMemberSchema.pick({
 
 const ChatMessageReadBySchema = z.object({
     messageId: z.number(),
-    timestamp: z.string(),
+    timestamp: z.string().datetime(),
     user: ChatMemberBasicSchema,
 });
 
@@ -41,6 +41,8 @@ const ChatMessageSchema = z.object({
     priority: z.boolean(),
     readBy: z.array(ChatMessageReadBySchema),
     sender: ChatMemberBasicSchema,
+    message: z.string(),
+    dateCreated: z.string().datetime(),
 });
 
 const ChatSchema = z.object({
@@ -57,10 +59,10 @@ const ChatSchema = z.object({
 
 const ChatListSchema = z.array(ChatSchema);
 
-type Chat = z.infer<typeof ChatSchema>;
+export type ChatData = z.infer<typeof ChatSchema>;
 
 class ChatService {
-    async getChats(isPriority: boolean = false, limit: number = 20): Promise<Chat[]> {
+    static async getChats(isPriority: boolean = false, limit: number = 100): Promise<ChatData[]> {
         const request = new Request(import.meta.env.VITE_GQL_ENDPOINT, {
             method: 'POST',
             headers: {
